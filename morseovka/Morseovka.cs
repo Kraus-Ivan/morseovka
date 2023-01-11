@@ -8,38 +8,49 @@ namespace morseovka
 {
     internal class Morseovka
     {
+        /// <summary>
+        /// Kóduje text do morseova kódu
+        /// </summary>
+        /// <param name="text">Vstupní text</param>
+        /// <returns>´Morseův kód</returns>
         public string Encode(string text)
         {
-            string[] PolePismen = CleanUpEncode(text);
-            List<string> PrelozeneZnaky = new List<string>();
-            for (int i = 0; i < PolePismen.Length; i++)
+            List<string> polePismen = CheckCH(SplitEncode(CleanUpEncode(text)));
+            List<string> prelozeneZnaky = new List<string>();
+            for (int i = 0; i < polePismen.Count; i++)
             {
-                PrelozeneZnaky.Add(_textToMorse[PolePismen[i].ToString()] + "/");
+                prelozeneZnaky.Add(_textToMorse[polePismen[i].ToString()]);
+                if (! (i == polePismen.Count - 1))
+                {
+                    prelozeneZnaky.Add("/");
+                }
             }
-            return String.Join("", PrelozeneZnaky.ToArray());
+            return String.Join("", prelozeneZnaky.ToArray());
         }
 
+        /// <summary>
+        /// Dekóduje morseovův kód do textu
+        /// </summary>
+        /// <param name="text">Vstupní morseův kód</param>
+        /// <returns>Přeložený text</returns>
         public string Decode(string text)
         {
-            List<string> PrelozeneZnaky = new List<string>();
-            string[] SplitnuteZnaky = CleanUpDecode(text);
-            for (int i = 0; i < SplitnuteZnaky.Length; i++)
+            List<string> prelozeneZnaky = new List<string>();
+            string[] splitnuteZnaky = text.Split("/");
+            for (int i = 0; i < splitnuteZnaky.Length; i++)
             {
-                PrelozeneZnaky.Add(_reversedTextToMorse[SplitnuteZnaky[i].ToString()]);
+                prelozeneZnaky.Add(_reversedTextToMorse[splitnuteZnaky[i].ToString()]);
             }
-            string vysledek = "";
-            foreach (var item in PrelozeneZnaky)
-            {
-                vysledek += item;
-            }
-            return vysledek;
+            return String.Join("", prelozeneZnaky.ToArray());
         }
 
-
-        //
-        private string[] CleanUpEncode(string text)
+        /// <summary>
+        /// Zbaví text diakritiky a převede na velká písmena
+        /// </summary>
+        /// <param name="text">Vstupní text</param>
+        /// <returns>Vrací očištěný text</returns>
+        private string CleanUpEncode(string text)
         {
-            // Zbaví text diakri
             string normalizedText = text.Normalize(NormalizationForm.FormD);
             StringBuilder sb = new StringBuilder();
             foreach (var x in normalizedText)
@@ -49,28 +60,40 @@ namespace morseovka
                     sb.Append(x);
                 }
             }
-            string novytext = sb.ToString().ToUpper().Normalize(NormalizationForm.FormC);
-            List<string> PolePismen = new List<string>();
-            for (int i = 0; i < novytext.Length; i++)
+            return sb.ToString().ToUpper().Normalize(NormalizationForm.FormC);
+        }
+        
+        /// <summary>
+        /// Kontroluje výskyt znaku CH
+        /// </summary>
+        /// <param name="poleZnaku">Vstupní pole se znaky</param>
+        /// <returns>Zkontrolované pole znaků</returns>
+        private List<string> CheckCH(List<string> poleZnaku)
+        {
+            for (int j = 0; j < poleZnaku.Count; j++)
             {
-                PolePismen.Add(novytext[i].ToString());
-            }
-            for (int j = 0; j < PolePismen.Count; j++)
-            {
-                if (PolePismen[j] == "C" && PolePismen[j+1] == "H")
+                if (poleZnaku[j] == "C" && poleZnaku[j + 1] == "H")
                 {
-                    PolePismen[j] = "CH";
-                    PolePismen.RemoveAt(j+1);
+                    poleZnaku[j] = "CH";
+                    poleZnaku.RemoveAt(j + 1);
                 }
             }
-            return PolePismen.ToArray();
+            return poleZnaku;
         }
 
-
-        // Splitne vstup pro dekódování
-        private string[] CleanUpDecode(string text)
+        /// <summary>
+        /// Rozdělí text na jednotlivá písmena
+        /// </summary>
+        /// <param name="text">Vstupní text</param>
+        /// <returns>Pole s jednotlivými znaky</returns>
+        private List<string> SplitEncode(string text)
         {
-            return text.Split("/");
+            List<string> poleZnaku = new List<string>();
+            for (int i = 0; i < text.Length; i++)
+            {
+                poleZnaku.Add(text[i].ToString());
+            }
+            return poleZnaku;
         }
 
         // Obrácený slovník s znaky - Použitý k dekódování

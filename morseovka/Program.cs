@@ -2,9 +2,9 @@
 using morseovka;
 
 Morseovka morseovka = new Morseovka();
-string text = "Šílená chlupatá veverka";
-//string text = ".../../.-.././-./.-//----/.-../..-/.--./.-/-/.-//...-/./...-/./.-./-.-/.-/";
-string vysledek = morseovka.Encode(text);
-Console.WriteLine(vysledek);
 
-//Console.WriteLine(morseovka.Decode(text));
+//string text = "Nejkulikatější kulička prorazila velkou hráz";
+string text = "-././.---/-.-/..-/.-../../-.-/.-/-/./.---/.../..//-.-/..-/.-../../-.-./-.-/.-//.--./.-./---/.-./.-/--../../.-../.-//...-/./.-../-.-/---/..-//..../.-./.-/--..";
+
+//Console.WriteLine(morseovka.Encode(text));
+Console.WriteLine(morseovka.Decode(text));
